@@ -9,6 +9,8 @@ spring:
         native:
           search-locations:
             - classpath:config/core/{application}
+            - classpath:config/core/stats/{application}
+            - classpath:config/infra/{application}
       retry:
         initial-interval: 1000
         max-attempts: 10

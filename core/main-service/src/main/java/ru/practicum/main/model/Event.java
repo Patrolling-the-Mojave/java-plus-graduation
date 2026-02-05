@@ -60,6 +60,7 @@ public class Event {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", length = 20)
+    @Builder.Default
     private EventState state = EventState.PENDING;
 
     @Column(name = "title", nullable = false, length = 120)

@@ -35,8 +35,10 @@ public class NewEventDto {
     @NotNull(message = "Локация не может быть null")
     private Location location;
 
+    @Builder.Default
     private Boolean paid = false;
 
+    @Builder.Default
     @PositiveOrZero(message = "Лимит участников должен быть больше или равен 0")
     private Integer participantLimit = 0;
 

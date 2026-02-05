@@ -14,7 +14,7 @@
 	<modules>
 		<module>infra</module>
 		<module>core</module>
-        <module>core/stats</module>
+        <module>stats</module>
     </modules>
 
 	<groupId>ru.practicum</groupId>

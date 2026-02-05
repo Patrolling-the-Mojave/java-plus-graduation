@@ -32,6 +32,7 @@ public class Request {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 20)
+    @Builder.Default
     private RequestStatus status = RequestStatus.PENDING;
 
     public enum RequestStatus {

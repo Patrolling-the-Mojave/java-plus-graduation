@@ -1,21 +1,21 @@
 spring:
   cloud:
     gateway:
-      discovery.locator.enabled: true
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       routes:
-        - id: main_service_route
+        - id: main_service_api
           uri: lb://main-service
           predicates:
-            - Path=**/users/**
-            - Path=**/categories/**
-            - Path=**/comments/**
-            - Path=**/events/**
-            - Path=**/compilations/**
+            - Path=/admin/**,/users/**,/events/**,/categories/**,/compilations/**,/comments/**
+          filters:
+            - CircuitBreaker=mainCircuit
 
-        - id: stats_server_route
+        - id: stats_service_api
           uri: lb://stat-server
           predicates:
-            - Path=/hit/**
-            - Path=/stats/**
-server:
-  port: 8080
+            - Path=/stats/**,/hit/**
+          filters:
+            - CircuitBreaker=statsCircuit

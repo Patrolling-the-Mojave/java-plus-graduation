@@ -19,3 +19,6 @@ spring:
             - Path=/stats/**,/hit/**
           filters:
             - CircuitBreaker=statsCircuit
+server:
+  port:
+    8080

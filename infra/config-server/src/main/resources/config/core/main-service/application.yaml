@@ -37,4 +37,4 @@ logging:
     org.springframework.orm.jpa.JpaTransactionManager: INFO
 
 stat-server:
-  url: http://stats-server
+  url: http://localhost:9090

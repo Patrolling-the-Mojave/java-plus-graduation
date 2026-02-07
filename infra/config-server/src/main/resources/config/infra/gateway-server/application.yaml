@@ -11,14 +11,7 @@ spring:
           predicates:
             - Path=/admin/**,/users/**,/events/**,/categories/**,/compilations/**,/comments/**
           filters:
-            - CircuitBreaker=mainCircuit
-
-        - id: stats_service_api
-          uri: lb://stats-server
-          predicates:
-            - Path=/stats/**,/hit/**
-          filters:
-            - CircuitBreaker=statsCircuit
+            - CircuitBreaker=mainCircui
 
 resilience4j.circuitbreaker:
   configs:

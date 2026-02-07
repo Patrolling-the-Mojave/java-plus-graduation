@@ -14,7 +14,7 @@ spring:
             - CircuitBreaker=mainCircuit
 
         - id: stats_service_api
-          uri: lb://stat-server
+          uri: lb://stats-server
           predicates:
             - Path=/stats/**,/hit/**
           filters:

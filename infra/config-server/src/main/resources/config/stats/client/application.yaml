@@ -1,0 +1,6 @@
+stat-server:
+  url: http://stat-server
+
+server:
+  port:
+    9092

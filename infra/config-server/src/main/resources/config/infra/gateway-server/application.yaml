@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: main_service_api
+          uri: lb://main-service
+          predicates:
+            - Path=/admin/**,/users/**,/events/**,/categories/**,/compilations/**,/comments/**
+          filters:
+            - CircuitBreaker=mainCircui
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10s
+      permittedNumberOfCallsInHalfOpenState: 3
+      minimumNumberOfCalls: 5
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      slidingWindowType: COUNT_BASED
+
+
+server:
+  port:
+    8080

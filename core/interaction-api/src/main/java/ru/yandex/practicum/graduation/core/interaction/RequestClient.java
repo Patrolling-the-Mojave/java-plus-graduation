@@ -1,0 +1,30 @@
+package ru.yandex.practicum.graduation.core.interaction;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto;
+import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+
+import java.util.List;
+
+@FeignClient(name = "request-service")
+public interface RequestClient {
+
+    @GetMapping("/internal/requests/countConfirmed")
+    List<ConfirmedRequestsCountDto> countConfirmedRequest(@RequestBody List<Long > eventIds);
+
+    @GetMapping("/internal/request/countConfirmed/{eventId}")
+    Integer countConfirmedRequest(@PathVariable Long eventId);
+
+    @GetMapping("/internal/requests/{eventId}")
+    List<ParticipationRequestDto> findRequestsByEventId(@PathVariable Long eventId);
+
+    @PostMapping("/internal/requests/{eventId}")
+    List<ParticipationRequestDto> findAllByIdInAndEventId(@RequestBody List<Long> requestIds, @PathVariable Long eventId);
+
+    @PatchMapping("/internal/requests/confirm")
+    void confirmRequests(@RequestBody List<Long> requestIds);
+
+    @PatchMapping("/internal/requests/reject")
+    void rejectRequests(@RequestBody List<Long> requestIds);
+}

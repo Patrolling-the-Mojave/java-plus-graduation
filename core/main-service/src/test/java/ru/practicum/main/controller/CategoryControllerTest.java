@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.main.dto.request.category.NewCategoryDto;
 import ru.practicum.main.dto.response.category.CategoryDto;
 import ru.practicum.main.exception.ConflictException;
-import ru.practicum.main.exception.NotFoundException;
+import ru.yandex.practicum.graduation.core.dto.NotFoundException;
 import ru.practicum.main.service.interfaces.CategoryService;
 import ru.practicum.stats.client.StatClient;
 

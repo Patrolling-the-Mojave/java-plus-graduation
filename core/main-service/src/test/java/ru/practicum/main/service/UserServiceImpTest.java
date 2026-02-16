@@ -10,7 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import ru.practicum.main.dto.request.user.NewUserRequest;
 import ru.practicum.main.dto.response.user.UserDto;
-import ru.practicum.main.exception.NotFoundException;
+import ru.yandex.practicum.graduation.core.dto.NotFoundException;
 import ru.practicum.main.model.User;
 import ru.practicum.main.repository.UserRepository;
 import ru.practicum.main.service.interfaces.UserService;

@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import ru.practicum.main.dto.request.event.*;
 import ru.practicum.main.dto.response.event.EventFullDto;
 import ru.practicum.main.dto.response.event.EventRequestStatusUpdateResult;
 import ru.practicum.main.dto.response.event.EventShortDto;

@@ -1,4 +1,4 @@
-package ru.yandex.practicum.graduation.core.dto;
+package ru.yandex.practicum.graduation.core.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
-    private Long id;
-    private String name;
-    private String email;
+@Builder
+public class ConfirmedRequestsCountDto {
+    private Long eventId;
+    private Long count;
 }

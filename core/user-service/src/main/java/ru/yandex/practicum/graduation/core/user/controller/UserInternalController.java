@@ -1,13 +1,12 @@
 package ru.yandex.practicum.graduation.core.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.interaction.UserClient;
 import ru.yandex.practicum.graduation.core.user.service.UserService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,5 +18,11 @@ public class UserInternalController implements UserClient {
     @Override
     public UserDto findUserById(@PathVariable("/{userId}") Long userId) {
         return userService.findUserById(userId);
+    }
+
+    @Override
+    @PostMapping
+    public List<UserDto> findUsersByIds(@RequestBody List<Long> userIds) {
+        return userService.findUsersById(userIds);
     }
 }

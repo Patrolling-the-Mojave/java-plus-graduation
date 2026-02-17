@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 
 
 import java.util.List;

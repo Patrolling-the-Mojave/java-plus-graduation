@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.yandex.practicum.graduation.core.dto.user.UserShortDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.category.CategoryDto;
-import ru.yandex.practicum.graduation.core.dto.UserShortDto;
 import ru.yandex.practicum.graduation.core.event.model.Event;
 
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
 package ru.yandex.practicum.graduation.core.user.service;
 
 import org.springframework.data.domain.Pageable;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.user.dto.NewUserRequest;
 
 

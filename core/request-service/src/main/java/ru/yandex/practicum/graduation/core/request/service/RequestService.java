@@ -1,9 +1,8 @@
 package ru.yandex.practicum.graduation.core.request.service;
 
 
-import feign.template.Literal;
-import ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 
 import java.util.List;
 

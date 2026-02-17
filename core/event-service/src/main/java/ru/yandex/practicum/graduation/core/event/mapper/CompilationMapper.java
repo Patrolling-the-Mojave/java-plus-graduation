@@ -2,7 +2,7 @@ package ru.yandex.practicum.graduation.core.event.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.compilation.NewCompilationDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.compilation.CompilationDto;
 import ru.yandex.practicum.graduation.core.event.model.Compilation;

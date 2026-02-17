@@ -3,8 +3,8 @@ package ru.yandex.practicum.graduation.core.request.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 import ru.yandex.practicum.graduation.core.interaction.RequestClient;
 import ru.yandex.practicum.graduation.core.request.service.RequestService;
 

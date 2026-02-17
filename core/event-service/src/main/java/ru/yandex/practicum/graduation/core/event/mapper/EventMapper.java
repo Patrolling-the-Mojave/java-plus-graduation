@@ -3,9 +3,11 @@ package ru.yandex.practicum.graduation.core.event.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.factory.Mappers;
-import ru.yandex.practicum.graduation.core.dto.EventDto;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import ru.yandex.practicum.graduation.core.dto.EventStateDto;
+import ru.yandex.practicum.graduation.core.dto.event.EventDto;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.event.NewEventDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.event.EventFullDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.event.EventShortDto;
@@ -44,7 +46,15 @@ public interface EventMapper {
     @Mapping(target = "location", source = "event.locationEntity")
     EventFullDto toEventFullDto(Event event, UserDto user);
 
-    @Mapping(target = "state", expression = "java(event.getState.name())")
+    @Mapping(target = "state", qualifiedByName = "mapEventState")
     EventDto toEventDto(Event event);
+
+    @Named("mapEventState")
+    default EventStateDto mapEventState(Event.EventState eventState){
+        if (eventState == null){
+            return null;
+        }
+        return EventStateDto.valueOf(eventState.name());
+    }
 
 }

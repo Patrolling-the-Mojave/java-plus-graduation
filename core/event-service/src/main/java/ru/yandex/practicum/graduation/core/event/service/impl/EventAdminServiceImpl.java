@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.client.StatClient;
-import ru.yandex.practicum.graduation.core.dto.ConflictException;
-import ru.yandex.practicum.graduation.core.dto.NotFoundException;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import ru.yandex.practicum.graduation.core.dto.exception.ConflictException;
+import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.event.SearchOfEventByAdminDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.event.StateAction;
 import ru.yandex.practicum.graduation.core.event.dto.request.event.UpdateEventAdminRequest;
@@ -21,6 +21,7 @@ import ru.yandex.practicum.graduation.core.event.mapper.LocationMapper;
 import ru.yandex.practicum.graduation.core.event.model.Category;
 import ru.yandex.practicum.graduation.core.event.model.Event;
 import ru.yandex.practicum.graduation.core.event.model.LocationEntity;
+import ru.yandex.practicum.graduation.core.event.model.QEvent;
 import ru.yandex.practicum.graduation.core.event.repository.CategoryRepository;
 import ru.yandex.practicum.graduation.core.event.repository.EventRepository;
 import ru.yandex.practicum.graduation.core.event.repository.LocationRepository;
@@ -134,7 +135,7 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
         BooleanBuilder predicate = new BooleanBuilder();
 
         if (searchDto.getUsers() != null && !searchDto.getUsers().isEmpty()) {
-            predicate.and(event.initiatorid.in(searchDto.getUsers()));
+            predicate.and(event.initiatorId.in(searchDto.getUsers()));
         }
 
         if (searchDto.getStates() != null && !searchDto.getStates().isEmpty()) {
@@ -145,7 +146,7 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
         }
 
         if (searchDto.getCategories() != null && !searchDto.getCategories().isEmpty()) {
-            predicate.and(event.categoryId.in(searchDto.getCategories()));
+            predicate.and(event.category.id.in(searchDto.getCategories()));
         }
 
         if (searchDto.getRangeStart() != null) {

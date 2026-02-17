@@ -1,7 +1,8 @@
-package ru.yandex.practicum.graduation.core.dto;
+package ru.yandex.practicum.graduation.core.dto.event;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.yandex.practicum.graduation.core.dto.EventStateDto;
 
 @Data
 @Builder

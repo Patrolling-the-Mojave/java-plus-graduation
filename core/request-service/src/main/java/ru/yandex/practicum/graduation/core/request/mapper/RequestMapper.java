@@ -3,7 +3,7 @@ package ru.yandex.practicum.graduation.core.request.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 import ru.yandex.practicum.graduation.core.request.model.Request;
 
 import java.util.List;

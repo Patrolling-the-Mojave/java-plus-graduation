@@ -3,7 +3,7 @@ package ru.yandex.practicum.graduation.core.request.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 import ru.yandex.practicum.graduation.core.request.service.RequestService;
 
 

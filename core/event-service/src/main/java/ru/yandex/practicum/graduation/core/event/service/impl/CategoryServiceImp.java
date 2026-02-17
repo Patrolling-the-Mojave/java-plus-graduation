@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.graduation.core.dto.NotFoundException;
+import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.event.dto.request.category.NewCategoryDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.category.CategoryDto;
 import ru.yandex.practicum.graduation.core.event.mapper.CategoryMapper;

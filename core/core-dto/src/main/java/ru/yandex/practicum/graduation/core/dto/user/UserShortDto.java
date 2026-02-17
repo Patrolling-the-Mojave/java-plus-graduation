@@ -1,4 +1,4 @@
-package ru.yandex.practicum.graduation.core.dto;
+package ru.yandex.practicum.graduation.core.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

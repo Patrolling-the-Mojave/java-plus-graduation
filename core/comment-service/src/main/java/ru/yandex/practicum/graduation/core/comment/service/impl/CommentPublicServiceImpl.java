@@ -9,7 +9,7 @@ import ru.yandex.practicum.graduation.core.comment.mapper.CommentMapper;
 import ru.yandex.practicum.graduation.core.comment.model.Comment;
 import ru.yandex.practicum.graduation.core.comment.repository.CommentRepository;
 import ru.yandex.practicum.graduation.core.comment.service.CommentPublicService;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.interaction.UserClient;
 import ru.yandex.practicum.graduation.core.interaction.UserClientException;
 

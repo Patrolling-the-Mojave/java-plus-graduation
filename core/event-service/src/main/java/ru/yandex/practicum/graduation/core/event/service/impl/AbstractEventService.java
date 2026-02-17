@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.stats.client.StatClient;
 import ru.practicum.stats.dto.dto.ViewStatsDto;
-import ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto;
+import ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto;
 import ru.yandex.practicum.graduation.core.event.model.Event;
 import ru.yandex.practicum.graduation.core.interaction.RequestClient;
 import ru.yandex.practicum.graduation.core.interaction.RequestClientException;

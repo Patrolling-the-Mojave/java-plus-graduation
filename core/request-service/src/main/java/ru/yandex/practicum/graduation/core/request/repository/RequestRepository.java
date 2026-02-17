@@ -3,7 +3,7 @@ package ru.yandex.practicum.graduation.core.request.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto;
+import ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto;
 import ru.yandex.practicum.graduation.core.request.model.Request;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     @Query("SELECT COUNT(r) FROM Request r WHERE r.event.id = :eventId AND r.status = 'CONFIRMED'")
     Integer countConfirmedRequestsByEventId(@Param("eventId") Long eventId);
 
-    @Query("SELECT NEW ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto(" +
+    @Query("SELECT NEW ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto(" +
             "r.event.id, COUNT(r)) " +
             "FROM Request r " +
             "WHERE r.event.id IN :eventIds AND r.status = 'CONFIRMED' " +

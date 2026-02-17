@@ -10,10 +10,11 @@ import ru.yandex.practicum.graduation.core.comment.dto.request.SearchOfCommentBy
 import ru.yandex.practicum.graduation.core.comment.dto.response.CommentDto;
 import ru.yandex.practicum.graduation.core.comment.mapper.CommentMapper;
 import ru.yandex.practicum.graduation.core.comment.model.Comment;
+import ru.yandex.practicum.graduation.core.comment.model.QComment;
 import ru.yandex.practicum.graduation.core.comment.repository.CommentRepository;
 import ru.yandex.practicum.graduation.core.comment.service.CommentAdminService;
-import ru.yandex.practicum.graduation.core.dto.NotFoundException;
-import ru.yandex.practicum.graduation.core.dto.UserDto;
+import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
+import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.interaction.UserClient;
 import ru.yandex.practicum.graduation.core.interaction.UserClientException;
 

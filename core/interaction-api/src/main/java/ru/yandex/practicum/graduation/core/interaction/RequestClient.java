@@ -2,8 +2,8 @@ package ru.yandex.practicum.graduation.core.interaction;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.graduation.core.dto.ConfirmedRequestsCountDto;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 
 import java.util.List;
 

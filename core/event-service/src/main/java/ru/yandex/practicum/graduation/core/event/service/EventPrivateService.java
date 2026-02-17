@@ -8,7 +8,7 @@ import ru.yandex.practicum.graduation.core.event.dto.request.event.UserIdAndEven
 import ru.yandex.practicum.graduation.core.event.dto.response.event.EventFullDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.event.EventRequestStatusUpdateResult;
 import ru.yandex.practicum.graduation.core.event.dto.response.event.EventShortDto;
-import ru.yandex.practicum.graduation.core.dto.ParticipationRequestDto;
+import ru.yandex.practicum.graduation.core.dto.request.ParticipationRequestDto;
 
 
 import java.util.List;

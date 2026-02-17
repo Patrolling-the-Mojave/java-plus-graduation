@@ -83,7 +83,7 @@ public class RequestServiceImpl implements RequestService {
         if (event.getState() != EventStateDto.PUBLISHED) {
             throw new ConflictException("нельзя участвовать в неопубликованном событии");
         }
-//        if (requestRepository.countByEvent_Id(eventId) >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
+//        if (requestRepository.countByEventId(eventId) >= event.getParticipantLimit() && event.getParticipantLimit() != 0) {
 //            throw new ConflictException("достигнут лимит запросов на участие");
 //        }
         if (!event.getRequestModeration()) {
@@ -142,6 +142,6 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Integer countConfirmedRequest(Long eventId) {
-        return requestRepository.countByEvent_Id(eventId);
+        return requestRepository.countByEventId(eventId);
     }
 }

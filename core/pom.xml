@@ -15,7 +15,6 @@
     <modules>
         <module>request-service</module>
         <module>user-service</module>
-        <module>main-service</module>
         <module>event-service</module>
         <module>interaction-api</module>
         <module>core-dto</module>

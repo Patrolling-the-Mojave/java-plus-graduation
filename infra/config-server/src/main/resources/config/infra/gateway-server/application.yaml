@@ -12,7 +12,7 @@ spring:
             - Path=/events/*/comments, /admin/comments/**, /users/*/comments/**
           filters:
             - CircuitBreaker=mainCircuit
-            -
+
         - id: event_service_categories
           uri: lb://event-service
           predicates:

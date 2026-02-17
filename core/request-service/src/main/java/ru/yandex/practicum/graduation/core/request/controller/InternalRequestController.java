@@ -19,9 +19,8 @@ public class InternalRequestController implements RequestClient {
 
     @GetMapping("/countConfirmed")
     @Override
-    public List<ConfirmedRequestsCountDto> countConfirmedRequest(List<Long> eventIds) {
+    public List<ConfirmedRequestsCountDto> countConfirmedRequest(@RequestBody List<Long> eventIds) {
         return requestService.countConfirmedRequests(eventIds);
-
     }
 
     @Override

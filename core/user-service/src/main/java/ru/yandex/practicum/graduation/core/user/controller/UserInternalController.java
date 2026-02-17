@@ -14,9 +14,9 @@ import java.util.List;
 public class UserInternalController implements UserClient {
     private final UserService userService;
 
-    @GetMapping
+    @GetMapping("/{userId}")
     @Override
-    public UserDto findUserById(@PathVariable("/{userId}") Long userId) {
+    public UserDto findUserById(@PathVariable Long userId) {
         return userService.findUserById(userId);
     }
 

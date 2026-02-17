@@ -11,9 +11,9 @@ import java.util.List;
 public interface RequestClient {
 
     @GetMapping("/internal/requests/countConfirmed")
-    List<ConfirmedRequestsCountDto> countConfirmedRequest(@RequestBody List<Long > eventIds);
+    List<ConfirmedRequestsCountDto> countConfirmedRequest(@RequestBody List<Long> eventIds);
 
-    @GetMapping("/internal/request/countConfirmed/{eventId}")
+    @GetMapping("/internal/requests/countConfirmed/{eventId}")
     Integer countConfirmedRequest(@PathVariable Long eventId);
 
     @GetMapping("/internal/requests/{eventId}")

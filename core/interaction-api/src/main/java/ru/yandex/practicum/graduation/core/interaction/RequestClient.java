@@ -10,7 +10,7 @@ import java.util.List;
 @FeignClient(name = "request-service")
 public interface RequestClient {
 
-    @GetMapping("/internal/requests/countConfirmed")
+    @PostMapping("/internal/requests/countConfirmed")
     List<ConfirmedRequestsCountDto> countConfirmedRequest(@RequestBody List<Long> eventIds);
 
     @GetMapping("/internal/requests/countConfirmed/{eventId}")
@@ -22,9 +22,9 @@ public interface RequestClient {
     @PostMapping("/internal/requests/{eventId}")
     List<ParticipationRequestDto> findAllByIdInAndEventId(@RequestBody List<Long> requestIds, @PathVariable Long eventId);
 
-    @PatchMapping("/internal/requests/confirm")
+    @PostMapping("/internal/requests/confirm")
     void confirmRequests(@RequestBody List<Long> requestIds);
 
-    @PatchMapping("/internal/requests/reject")
+    @PostMapping("/internal/requests/reject")
     void rejectRequests(@RequestBody List<Long> requestIds);
 }

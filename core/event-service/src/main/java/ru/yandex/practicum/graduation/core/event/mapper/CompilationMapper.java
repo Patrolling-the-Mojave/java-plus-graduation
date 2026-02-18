@@ -2,9 +2,11 @@ package ru.yandex.practicum.graduation.core.event.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.compilation.NewCompilationDto;
 import ru.yandex.practicum.graduation.core.event.dto.response.compilation.CompilationDto;
+import ru.yandex.practicum.graduation.core.event.dto.response.event.EventShortDto;
 import ru.yandex.practicum.graduation.core.event.model.Compilation;
 import ru.yandex.practicum.graduation.core.event.model.Event;
 
@@ -14,8 +16,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {EventMapper.class, UserMapper.class})
 public interface CompilationMapper {
+
 
     @Mapping(target = "events", source = "events")
     @Mapping(target = "id", ignore = true)
@@ -25,7 +28,7 @@ public interface CompilationMapper {
         return CompilationDto
                 .builder()
                 .events(compilation.getEvents().stream()
-                        .map(event -> EventMapper.INSTANCE.toEventShortDto(event, initiatorById.get(event.getInitiatorId())))
+                        .map(event -> toEventShortDtoWithInitiator(event, initiatorById.get(event.getInitiatorId())))
                         .collect(Collectors.toSet()))
                 .id(compilation.getId())
                 .pinned(compilation.getPinned())
@@ -35,5 +38,17 @@ public interface CompilationMapper {
 
     default List<CompilationDto> toDto(List<Compilation> compilations, Map<Long, UserDto> initiatorByIdMap) {
         return compilations.stream().map(compilation -> toDto(compilation, initiatorByIdMap)).toList();
+    }
+
+    default EventShortDto toEventShortDtoWithInitiator(Event event, UserDto initiator) {
+        return eventMapper().toEventShortDto(event, initiator);
+    }
+
+    default EventMapper eventMapper() {
+        return Mappers.getMapper(EventMapper.class);
+    }
+
+    default UserMapper userMapper() {
+        return Mappers.getMapper(UserMapper.class);
     }
 }

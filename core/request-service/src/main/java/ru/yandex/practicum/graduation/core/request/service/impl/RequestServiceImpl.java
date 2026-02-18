@@ -142,6 +142,6 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public Integer countConfirmedRequest(Long eventId) {
-        return requestRepository.countByEventId(eventId);
+        return requestRepository.countConfirmedRequestsByEventId(eventId);
     }
 }

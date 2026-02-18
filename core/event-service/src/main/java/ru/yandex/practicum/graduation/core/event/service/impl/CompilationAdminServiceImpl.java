@@ -6,10 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.dto.user.UserDto;
+import ru.yandex.practicum.graduation.core.dto.user.UserShortDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.compilation.NewCompilationDto;
 import ru.yandex.practicum.graduation.core.event.dto.request.compilation.UpdateCompilationRequest;
 import ru.yandex.practicum.graduation.core.event.dto.response.compilation.CompilationDto;
+import ru.yandex.practicum.graduation.core.event.dto.response.event.EventShortDto;
 import ru.yandex.practicum.graduation.core.event.mapper.CompilationMapper;
+import ru.yandex.practicum.graduation.core.event.mapper.EventMapper;
+import ru.yandex.practicum.graduation.core.event.mapper.UserMapper;
 import ru.yandex.practicum.graduation.core.event.model.Compilation;
 import ru.yandex.practicum.graduation.core.event.model.Event;
 import ru.yandex.practicum.graduation.core.event.repository.CompilationRepository;
@@ -32,6 +36,8 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
     private final CompilationRepository compilationRepository;
     private final EventRepository eventRepository;
     private final CompilationMapper compilationMapper;
+    private final EventMapper eventMapper;
+    private final UserMapper userMapper;
     private final UserClient userClient;
 
     @Override
@@ -41,10 +47,18 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         Set<Event> events = eventRepository.findAllByIdIn(newCompilation.getEvents());
         Compilation compilation = compilationMapper.toEntity(newCompilation, events);
         compilationRepository.save(compilation);
-        List<Long>  initiatorIds = events.stream().map(Event::getId).toList();
+        List<Long>  initiatorIds = events.stream().map(Event::getInitiatorId).toList();
         List<UserDto> userDtos = userClient.findUsersByIds(initiatorIds);
         Map<Long, UserDto> userByIdMap = userDtos.stream().collect(Collectors.toMap(UserDto::getId, Function.identity()));
-        return compilationMapper.toDto(compilation, userByIdMap);
+        Set<EventShortDto> eventShortDtos = compilation.getEvents().stream()
+                .map(event -> {
+                    UserDto userDto = userByIdMap.get(event.getInitiatorId());
+                    return eventMapper.toEventShortDto(event, userDto);
+                })
+                .collect(Collectors.toSet());
+        CompilationDto compilationDto = compilationMapper.toDto(compilation);
+        compilationDto.setEvents(eventShortDtos);
+        return compilationDto;
     }
 
     @Override
@@ -66,7 +80,15 @@ public class CompilationAdminServiceImpl implements CompilationAdminService {
         List<Long> initiatorIds = oldCompilation.getEvents().stream().map(Event::getInitiatorId).toList();
         List<UserDto> userDtos = userClient.findUsersByIds(initiatorIds);
         Map<Long, UserDto> userByIdMap = userDtos.stream().collect(Collectors.toMap(UserDto::getId, Function.identity()));
-        return compilationMapper.toDto(oldCompilation, userByIdMap);
+        Set<EventShortDto> eventShortDtos = oldCompilation.getEvents().stream()
+                .map(event -> {
+                    UserDto userDto = userByIdMap.get(event.getInitiatorId());
+                    return eventMapper.toEventShortDto(event, userDto);
+                })
+                .collect(Collectors.toSet());
+        CompilationDto compilationDto = compilationMapper.toDto(oldCompilation);
+        compilationDto.setEvents(eventShortDtos);
+        return compilationDto;
     }
 
     private Compilation getById(Long compilationId) {

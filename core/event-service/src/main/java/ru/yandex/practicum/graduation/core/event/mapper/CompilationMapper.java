@@ -11,9 +11,7 @@ import ru.yandex.practicum.graduation.core.event.model.Compilation;
 import ru.yandex.practicum.graduation.core.event.model.Event;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Mapper(componentModel = "spring", uses = {EventMapper.class, UserMapper.class})
@@ -24,31 +22,9 @@ public interface CompilationMapper {
     @Mapping(target = "id", ignore = true)
     Compilation toEntity(NewCompilationDto newCompilation, Set<Event> events);
 
-    default CompilationDto toDto(Compilation compilation, Map<Long, UserDto> initiatorById) {
-        return CompilationDto
-                .builder()
-                .events(compilation.getEvents().stream()
-                        .map(event -> toEventShortDtoWithInitiator(event, initiatorById.get(event.getInitiatorId())))
-                        .collect(Collectors.toSet()))
-                .id(compilation.getId())
-                .pinned(compilation.getPinned())
-                .title(compilation.getTitle())
-                .build();
-    }
+    @Mapping(target = "events", ignore = true)
+    CompilationDto toDto(Compilation compilation);
 
-    default List<CompilationDto> toDto(List<Compilation> compilations, Map<Long, UserDto> initiatorByIdMap) {
-        return compilations.stream().map(compilation -> toDto(compilation, initiatorByIdMap)).toList();
-    }
+    List<CompilationDto> toDto(List<Compilation> compilations);
 
-    default EventShortDto toEventShortDtoWithInitiator(Event event, UserDto initiator) {
-        return eventMapper().toEventShortDto(event, initiator);
-    }
-
-    default EventMapper eventMapper() {
-        return Mappers.getMapper(EventMapper.class);
-    }
-
-    default UserMapper userMapper() {
-        return Mappers.getMapper(UserMapper.class);
-    }
 }

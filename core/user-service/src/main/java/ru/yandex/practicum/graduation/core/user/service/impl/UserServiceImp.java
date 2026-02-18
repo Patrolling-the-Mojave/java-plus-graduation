@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.graduation.core.dto.exception.ConflictException;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.user.dto.NewUserRequest;
@@ -42,6 +43,9 @@ public class UserServiceImp implements UserService {
     @Transactional
     public UserDto addUser(NewUserRequest newUserRequest) {
         log.info("Добавление нового пользователя " + newUserRequest);
+        if (repository.existsByEmail(newUserRequest.getEmail())){
+            throw new ConflictException("пользователь с email "+ newUserRequest.getEmail()+" уже существует");
+        }
         User user = userMapper.toEntity(newUserRequest);
         User savedUser = repository.save(user);
         log.info("Пользователь добавлен: {}", savedUser);

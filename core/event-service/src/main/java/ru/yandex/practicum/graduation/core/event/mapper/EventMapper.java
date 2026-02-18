@@ -19,7 +19,6 @@ import ru.yandex.practicum.graduation.core.event.model.LocationEntity;
 @Mapper(componentModel = "spring",
         uses = {CategoryMapper.class, LocationMapper.class, UserMapper.class})
 public interface EventMapper {
-    EventMapper INSTANCE = Mappers.getMapper(EventMapper.class);
 
     @Mapping(target = "id", source = "event.id")
     @Mapping(target = "initiator", source = "initiator")
@@ -56,5 +55,4 @@ public interface EventMapper {
         }
         return EventStateDto.valueOf(eventState.name());
     }
-
 }

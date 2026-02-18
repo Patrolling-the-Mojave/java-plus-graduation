@@ -28,6 +28,7 @@ public class RequestExceptionHandler {
         );
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleIllegalArgument(final IllegalArgumentException exception) {
         log.warn("illegal argument", exception);

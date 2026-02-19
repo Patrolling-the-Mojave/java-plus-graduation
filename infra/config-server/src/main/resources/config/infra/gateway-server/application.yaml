@@ -6,12 +6,47 @@ spring:
           enabled: true
           lower-case-service-id: true
       routes:
-        - id: main_service_api
-          uri: lb://main-service
+        - id: comment_service_comments
+          uri: lb://comment-service
           predicates:
-            - Path=/admin/**,/users/**,/events/**,/categories/**,/compilations/**,/comments/**
+            - Path=/events/*/comments, /admin/comments/**, /users/*/comments/**
           filters:
-            - CircuitBreaker=mainCircui
+            - CircuitBreaker=mainCircuit
+
+        - id: event_service_categories
+          uri: lb://event-service
+          predicates:
+            - Path=/categories/**, /admin/categories/**
+          filters:
+            - CircuitBreaker=mainCircuit
+
+        - id: event_service_compilations
+          uri: lb://event-service
+          predicates:
+            - Path=/compilations/**, /admin/compilations/**
+          filters:
+            - CircuitBreaker=mainCircuit
+
+        - id: event_service_events
+          uri: lb://event-service
+          predicates:
+            - Path=/events/**, /users/*/events/**, /admin/events/**
+          filters:
+            - CircuitBreaker=mainCircuit
+
+        - id: request_service_requests
+          uri: lb://request-service
+          predicates:
+            - Path=/users/*/requests/**
+          filters:
+            - CircuitBreaker=mainCircuit
+
+        - id: user_service_users
+          uri: lb://user-service
+          predicates:
+            - Path=/admin/users/**
+          filters:
+            - CircuitBreaker=mainCircuit
 
 resilience4j.circuitbreaker:
   configs:

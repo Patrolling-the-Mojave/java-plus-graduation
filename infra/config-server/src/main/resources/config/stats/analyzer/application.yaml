@@ -8,9 +8,9 @@ spring:
     topics:
       stats:
         user-action:
-          v1: telemetry.hubs.v1
+          v1: stats.user-action.v1
         events-similarity:
-          v1: telemetry.sensors.v1
+          v1: stats.events-similarity.v1
   jpa:
     hibernate:
       ddl-auto: none

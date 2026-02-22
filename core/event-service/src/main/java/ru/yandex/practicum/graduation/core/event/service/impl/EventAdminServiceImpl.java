@@ -9,7 +9,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.client.AnalyzerClient;
-import ru.practicum.stats.client.StatClient;
 import ru.yandex.practicum.graduation.core.dto.exception.ConflictException;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.dto.user.UserDto;
@@ -118,9 +117,9 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
         Integer confirmedRequests = requestClient.countConfirmedRequest(eventId);
         updatedEvent.setConfirmedRequests(confirmedRequests);
         UserDto userDto;
-        try{
+        try {
             userDto = userClient.findUserById(event.getInitiatorId());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new UserClientException("не удалось получить пользователя", e);
         }
         EventFullDto result = eventMapper.toEventFullDto(updatedEvent, userDto);

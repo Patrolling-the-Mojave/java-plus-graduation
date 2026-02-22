@@ -19,9 +19,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserActionKafkaConsumer {
     private final EventSimilarityService similarityService;
-    private final KafkaTemplate<String, EventSimilarityAvro> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    @Value("${spring.kafka.topics.stats.event-similarity.v1}")
+    @Value("${spring.kafka.topics.stats.events-similarity.v1}")
     private String similarityTopic;
 
     @KafkaListener(topics = "${spring.kafka.topics.stats.user-action.v1}")

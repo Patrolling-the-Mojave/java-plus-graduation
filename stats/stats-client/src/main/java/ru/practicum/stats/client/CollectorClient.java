@@ -9,11 +9,10 @@ import ru.yandex.practicum.stats.collector.grpc.UserActionControllerGrpc;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class CollectorClient {
 
     @GrpcClient("collector")
-    private final UserActionControllerGrpc.UserActionControllerBlockingStub collectorGrpc;
+    UserActionControllerGrpc.UserActionControllerBlockingStub collectorGrpc;
 
     public void sendUserAction(UserActionProto userActionProto) {
         try {

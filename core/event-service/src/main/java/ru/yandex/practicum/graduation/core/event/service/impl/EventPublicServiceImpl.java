@@ -9,8 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import ru.practicum.stats.client.AnalyzerClient;
+import ru.practicum.stats.client.CollectorClient;
 import ru.practicum.stats.client.StatClient;
 import ru.practicum.stats.dto.dto.EndpointHitDto;
+import ru.practicum.stats.dto.dto.RecommendationEvent;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.dto.user.UserDto;
 import ru.yandex.practicum.graduation.core.dto.exception.ValidationException;
@@ -31,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -42,13 +46,16 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final UserClient userClient;
+    private final CollectorClient collectorClient;
 
     public EventPublicServiceImpl(RequestClient requestClient,
-                                  StatClient statClient,
+                                  AnalyzerClient analyzerClient,
+                                  CollectorClient collectorClient,
                                   EventRepository eventRepository,
                                   EventMapper eventMapper, UserClient userClient) {
-        super(requestClient, statClient);
+        super(requestClient, analyzerClient);
         this.eventMapper = eventMapper;
+        this.collectorClient = collectorClient;
         this.eventRepository = eventRepository;
         this.userClient = userClient;
     }
@@ -65,7 +72,6 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
         Page<Event> eventsPage = eventRepository.findAll(predicate, pageable);
         if (eventsPage.isEmpty()) {
             log.debug("События по заданным критериям не найдены");
-            saveHit(request, "/events");
             return Collections.emptyList();
         }
         List<Event> events = eventsPage.getContent();
@@ -76,27 +82,25 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
             throw new UserClientException("не удалось получить данные от сервиса пользователей");
         }
         Map<Long, UserDto> userByIdMap = userDtos.stream().collect(Collectors.toMap(UserDto::getId, Function.identity()));
-        Map<Long, Long> views = getEventsViews(events);
+        Map<Long, Double> ratings = getEventsRating(events);
         Map<Long, Integer> confirmedRequests = getConfirmedRequests(events);
         List<EventShortDto> result = events.stream()
                 .map(event -> {
                     EventShortDto dto = eventMapper.toEventShortDto(event, userByIdMap.get(event.getInitiatorId()));
-                    dto.setViews(views.getOrDefault(event.getId(), 0L));
+                    dto.setRating(ratings.getOrDefault(event.getId(), 0.0));
                     dto.setConfirmedRequests(confirmedRequests.getOrDefault(event.getId(), 0));
                     return dto;
                 })
                 .toList();
-        saveHit(request, "/events");
         return result;
     }
 
     @Override
-    public EventFullDto getEvent(Long id, HttpServletRequest request) {
+    public EventFullDto getEvent(Long id, Long userId, HttpServletRequest request) {
         log.debug("Получение публичного события {}", id);
         Event event = eventRepository.findByIdAndState(id, Event.EventState.PUBLISHED)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Событие с id=%d не было найдено или не опубликовано", id)));
-        Long views = getEventViews(id);
         Integer confirmedRequests;
         try {
             confirmedRequests = requestClient.countConfirmedRequest(id);
@@ -113,13 +117,49 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
             throw new NotFoundException("пользователь с id " + event.getInitiatorId() + " не найден");
         }
         event.setConfirmedRequests(confirmedRequests);
+        Double rating = getEventRating(id);
         EventFullDto result = eventMapper.toEventFullDto(event, userDto);
-        result.setViews(views);
+        result.setRating(rating);
         result.setConfirmedRequests(confirmedRequests);
-
-        saveHit(request, "/events/" + id);
         log.debug("Событие {} найдено", id);
         return result;
+    }
+
+    @Override
+    public List<EventShortDto> getRecommendations(Long userId, int maxResults) {
+        List<RecommendationEvent> recommendations = analyzerClient.getRecommendationsForUser(userId, maxResults);
+        if (recommendations.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Long> eventIds = recommendations.stream()
+                .map(RecommendationEvent::getEventId)
+                .collect(Collectors.toList());
+
+        List<Event> events = eventRepository.findAllById(eventIds);
+        Map<Long, Event> eventMap = events.stream()
+                .collect(Collectors.toMap(Event::getId, e -> e));
+
+        List<Long> initiatorIds = events.stream()
+                .map(Event::getInitiatorId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<UserDto> userDtos = userClient.findUsersByIds(initiatorIds);
+        Map<Long, UserDto> userByIdMap = userDtos.stream()
+                .collect(Collectors.toMap(UserDto::getId, Function.identity()));
+
+        return recommendations.stream()
+                .map(rec -> {
+                    Event event = eventMap.get(rec.getEventId());
+                    if (event == null) {
+                        return null;
+                    }
+                    EventShortDto dto = eventMapper.toEventShortDto(event, userByIdMap.get(event.getInitiatorId()));
+                    dto.setRating(rec.getScore());
+                    return dto;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private Predicate buildPredicate(SearchOfEventByPublicDto searchDto) {
@@ -161,25 +201,4 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
         return predicate;
     }
 
-    private void saveHit(HttpServletRequest request, String uri) {
-        try {
-            String clientIp = request.getRemoteAddr();
-            String requestUri = request.getRequestURI();
-
-            log.info("Client IP: {}, Endpoint: {}", clientIp, requestUri);
-
-            EndpointHitDto hitDto = EndpointHitDto.builder()
-                    .app("ewm-main-service")
-                    .uri(uri)
-                    .ip(clientIp)
-                    .timestamp(LocalDateTime.now())
-                    .build();
-
-            statClient.hit(hitDto);
-            log.debug("Hit saved: {}", hitDto);
-
-        } catch (Exception e) {
-            log.warn("Ошибка при сохранении статистики: {}", e.getMessage());
-        }
-    }
 }

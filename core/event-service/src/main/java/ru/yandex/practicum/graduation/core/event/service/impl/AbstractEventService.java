@@ -3,7 +3,9 @@ package ru.yandex.practicum.graduation.core.event.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import ru.practicum.stats.client.AnalyzerClient;
 import ru.practicum.stats.client.StatClient;
+import ru.practicum.stats.dto.dto.RecommendationEvent;
 import ru.practicum.stats.dto.dto.ViewStatsDto;
 import ru.yandex.practicum.graduation.core.dto.request.ConfirmedRequestsCountDto;
 import ru.yandex.practicum.graduation.core.event.model.Event;
@@ -20,36 +22,44 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public abstract class AbstractEventService {
     protected final RequestClient requestClient;
-    protected final StatClient statClient;
+    protected final AnalyzerClient analyzerClient;
 
-    protected Map<Long, Long> getEventsViews(List<Event> events) {
+
+    protected Map<Long, Double> getEventsRating(List<Event> events) {
         if (events.isEmpty()) {
             return Collections.emptyMap();
         }
 
-        List<String> uris = events.stream()
-                .map(event -> "/events/" + event.getId())
+        List<Long> eventIds = events.stream()
+                .map(Event::getId)
                 .collect(Collectors.toList());
 
-        LocalDateTime start = LocalDateTime.of(2000, 1, 1, 0, 0);
-        LocalDateTime end = LocalDateTime.now();
-
         try {
-            ResponseEntity<List<ViewStatsDto>> response = statClient.getStats(start, end, uris, true);
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return response.getBody().stream()
-                        .collect(Collectors.toMap(
-                                stats -> extractEventIdFromUri(stats.getUri()),
-                                ViewStatsDto::getHits
-                        ));
-            }
+            List<RecommendationEvent> ratings = analyzerClient.getInteractionsCount(eventIds);
+            return ratings.stream()
+                    .collect(Collectors.toMap(
+                            RecommendationEvent::getEventId,
+                            RecommendationEvent::getScore,
+                            (a, b) -> a
+                    ));
         } catch (Exception e) {
-            log.warn("Ошибка при получении статистики просмотров: {}", e.getMessage());
+            log.warn("Ошибка при получении рейтинга мероприятий: {}", e.getMessage());
+            return events.stream()
+                    .collect(Collectors.toMap(Event::getId, event -> 0.0));
         }
+    }
 
-        return events.stream()
-                .collect(Collectors.toMap(Event::getId, event -> 0L));
+    protected Double getEventRating(Long eventId) {
+        try {
+            List<RecommendationEvent> ratings = analyzerClient.getInteractionsCount(List.of(eventId));
+            return ratings.stream()
+                    .findFirst()
+                    .map(RecommendationEvent::getScore)
+                    .orElse(0.0);
+        } catch (Exception e) {
+            log.warn("Ошибка при получении рейтинга для мероприятия {}: {}", eventId, e.getMessage());
+            return 0.0;
+        }
     }
 
     protected Long extractEventIdFromUri(String uri) {
@@ -59,26 +69,6 @@ public abstract class AbstractEventService {
             log.warn("Не удалось извлечь ID события из URI: {}", uri);
             return 0L;
         }
-    }
-
-    protected Long getEventViews(Long eventId) {
-        try {
-            LocalDateTime start = LocalDateTime.of(2000, 1, 1, 0, 0);
-            LocalDateTime end = LocalDateTime.now();
-            List<String> uris = List.of("/events/" + eventId);
-
-            ResponseEntity<List<ViewStatsDto>> response = statClient.getStats(start, end, uris, true);
-
-            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                return response.getBody().stream()
-                        .findFirst()
-                        .map(ViewStatsDto::getHits)
-                        .orElse(0L);
-            }
-        } catch (Exception e) {
-            log.warn("Ошибка при получении статистики просмотров для события {}: {}", eventId, e.getMessage());
-        }
-        return 0L;
     }
 
     protected Map<Long, Integer> getConfirmedRequests(List<Event> events) {

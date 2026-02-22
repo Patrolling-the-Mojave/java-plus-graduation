@@ -1,0 +1,17 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    topics:
+      stats:
+        user-action:
+          v1: stats.user-action.v1
+        events-similarity:
+          v1: stats.events-similarity.v1
+
+server:
+  port: 9095
+
+
+grpc:
+  server:
+    port: 0

@@ -1,0 +1,56 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id:
+        - analyzer-event-similarity-group
+        - analyzer-user-action-group
+    topics:
+      stats:
+        user-action:
+          v1: stats.user-action.v1
+        events-similarity:
+          v1: stats.events-similarity.v1
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  sql:
+    init:
+      mode: always
+
+  jackson:
+    time-zone: UTC
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:6546/analyzer
+    username: postgres
+    password: root
+
+server:
+  port: 9097
+
+grpc:
+  server:
+    port: 0
+
+logging:
+  level:
+    root: INFO
+    ru.practicum.main: TRACE
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.transaction: DEBUG
+    org.springframework.transaction.interceptor: DEBUG
+    org.springframework.orm.jpa.JpaTransactionManager: INFO
+
+stat-server:
+  url: http://localhost:9090

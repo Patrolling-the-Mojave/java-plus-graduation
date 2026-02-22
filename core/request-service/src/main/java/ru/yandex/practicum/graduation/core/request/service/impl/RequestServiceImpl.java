@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.stats.client.CollectorClient;
 import ru.yandex.practicum.graduation.core.dto.*;
 import ru.yandex.practicum.graduation.core.dto.event.EventDto;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
@@ -20,6 +21,8 @@ import ru.yandex.practicum.graduation.core.request.mapper.RequestMapper;
 import ru.yandex.practicum.graduation.core.request.model.Request;
 import ru.yandex.practicum.graduation.core.request.repository.RequestRepository;
 import ru.yandex.practicum.graduation.core.request.service.RequestService;
+import ru.yandex.practicum.stats.collector.event.ActionTypeProto;
+import ru.yandex.practicum.stats.collector.event.UserActionProto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +35,7 @@ public class RequestServiceImpl implements RequestService {
     private final UserClient userClient;
     private final EventClient eventClient;
     private final RequestMapper requestMapper;
+    private final CollectorClient collectorClient;
     private final RequestRepository requestRepository;
 
     @Override
@@ -92,6 +96,13 @@ public class RequestServiceImpl implements RequestService {
                 throw new ConflictException("Достигнут лимит подтверждённых участников");
             }
         }
+        UserActionProto userActionProto = UserActionProto.newBuilder()
+                .setUserId(userId)
+                .setEventId(eventId)
+                .setActionType(ActionTypeProto.ACTION_REGISTER)
+                .build();
+        collectorClient.sendUserAction(userActionProto);
+
         Request request = Request
                 .builder()
                 .requesterId(userId)

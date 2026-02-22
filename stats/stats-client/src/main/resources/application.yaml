@@ -1,6 +1,6 @@
 spring:
   application:
-    name: client
+    name: stats-client
   config:
     import: "configserver:"
   cloud:

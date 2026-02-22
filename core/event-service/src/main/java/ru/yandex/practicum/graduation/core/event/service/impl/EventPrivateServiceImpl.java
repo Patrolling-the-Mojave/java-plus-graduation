@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.stats.client.AnalyzerClient;
+import ru.practicum.stats.client.CollectorClient;
 import ru.practicum.stats.client.StatClient;
 import ru.yandex.practicum.graduation.core.dto.exception.ConflictException;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
@@ -46,21 +48,24 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
     private final EventRepository eventRepository;
     private final UserClient userClient;
     private final EventMapper eventMapper;
+    private final CollectorClient collectorClient;
     private final LocationMapper locationMapper;
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
 
     public EventPrivateServiceImpl(RequestClient requestClient,
-                                   StatClient statClient,
+                                   AnalyzerClient analyzerClient,
                                    EventRepository eventRepository,
                                    UserClient userClient,
+                                   CollectorClient collectorClient,
                                    LocationMapper locationMapper,
                                    EventMapper eventMapper,
                                    CategoryRepository categoryRepository,
                                    LocationRepository locationRepository) {
-        super(requestClient, statClient);
+        super(requestClient, analyzerClient);
         this.eventRepository = eventRepository;
         this.userClient = userClient;
+        this.collectorClient = collectorClient;
         this.locationMapper = locationMapper;
         this.eventMapper = eventMapper;
         this.categoryRepository = categoryRepository;
@@ -85,11 +90,11 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
             throw new UserClientException("не удалось получить инициаторов", e);
         }
         Map<Long, UserDto> userByIdMap = userDtos.stream().collect(Collectors.toMap(UserDto::getId, Function.identity()));
-        Map<Long, Long> views = getEventsViews(events);
+        Map<Long, Double> ratings = getEventsRating(events);
         return events.stream()
                 .map(event -> {
                     EventShortDto dto = eventMapper.toEventShortDto(event, userByIdMap.get(event.getInitiatorId()));
-                    dto.setViews(views.getOrDefault(event.getId(), 0L));
+                    dto.setRating(ratings.getOrDefault(event.getId(), 0.0));
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -117,7 +122,7 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
         Event savedEvent = eventRepository.save(event);
         log.info("Событие создано успешно: ID {}", savedEvent.getId());
         EventFullDto result = eventMapper.toEventFullDto(savedEvent, user);
-        result.setViews(0L);
+        result.setRating(0.0);
         return result;
     }
 
@@ -132,9 +137,9 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
             throw new RequestClientException("произошла ошибка при обращении к сервису запросов", e);
         }
         event.setConfirmedRequests(confirmedRequests);
-        Long views = getEventViews(eventId);
+        Double rating = getEventRating(eventId);
         EventFullDto result = eventMapper.toEventFullDto(event, user);
-        result.setViews(views);
+        result.setRating(rating);
         log.debug("Событие {} пользователя {} найдено", eventId, userId);
         return result;
     }
@@ -159,9 +164,9 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
         Integer confirmedRequests = requestClient.countConfirmedRequest(eventId);
         event.setConfirmedRequests(confirmedRequests);
         Event updatedEvent = eventRepository.save(event);
-        Long views = getEventViews(eventId);
+        Double rating = getEventRating(eventId);
         EventFullDto result = eventMapper.toEventFullDto(updatedEvent, userDto);
-        result.setViews(views);
+        result.setRating(rating);
         log.info("Событие {} пользователя {} успешно обновлено", eventId, userId);
         return result;
     }

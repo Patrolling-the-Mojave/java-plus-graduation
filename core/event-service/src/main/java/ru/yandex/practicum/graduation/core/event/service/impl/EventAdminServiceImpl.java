@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.stats.client.AnalyzerClient;
 import ru.practicum.stats.client.StatClient;
 import ru.yandex.practicum.graduation.core.dto.exception.ConflictException;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
@@ -50,14 +51,14 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
 
 
     public EventAdminServiceImpl(RequestClient requestClient,
-                                 StatClient statClient,
+                                 AnalyzerClient analyzerClient,
                                  EventMapper eventMapper,
                                  UserClient userClient,
                                  LocationMapper locationMapper,
                                  EventRepository eventRepository,
                                  CategoryRepository categoryRepository,
                                  LocationRepository locationRepository) {
-        super(requestClient, statClient);
+        super(requestClient, analyzerClient);
         this.eventMapper = eventMapper;
         this.userClient = userClient;
         this.locationMapper = locationMapper;
@@ -84,12 +85,12 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
             throw new UserClientException("не удалось получить dto инициаторов", e);
         }
         Map<Long, UserDto> initiatorByIdMap = userDtos.stream().collect(Collectors.toMap(UserDto::getId, Function.identity()));
-        Map<Long, Long> views = getEventsViews(events);
+        Map<Long, Double> ratings = getEventsRating(events);
         Map<Long, Integer> confirmedRequests = getConfirmedRequests(events);
         return events.stream()
                 .map(event -> {
                     EventFullDto dto = eventMapper.toEventFullDto(event, initiatorByIdMap.get(event.getInitiatorId()));
-                    dto.setViews(views.getOrDefault(event.getId(), 0L));
+                    dto.setRating(ratings.getOrDefault(event.getId(), 0.0));
                     dto.setConfirmedRequests(confirmedRequests.getOrDefault(event.getId(), 0));
                     return dto;
                 })
@@ -113,7 +114,7 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
         }
         Event updatedEvent = eventRepository.save(event);
 
-        Long views = getEventViews(eventId);
+        Double rating = getEventRating(eventId);
         Integer confirmedRequests = requestClient.countConfirmedRequest(eventId);
         updatedEvent.setConfirmedRequests(confirmedRequests);
         UserDto userDto;
@@ -123,7 +124,7 @@ public class EventAdminServiceImpl extends AbstractEventService implements Event
             throw new UserClientException("не удалось получить пользователя", e);
         }
         EventFullDto result = eventMapper.toEventFullDto(updatedEvent, userDto);
-        result.setViews(views);
+        result.setRating(rating);
         result.setConfirmedRequests(confirmedRequests);
 
         log.info("Событие {} успешно обновлено администратором", eventId);

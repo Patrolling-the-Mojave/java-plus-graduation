@@ -111,11 +111,11 @@ services:
     container_name: kafka-init-topics
     depends_on:
       - kafka
-    command: "bash -c \
+    command: "bash -c' \
                 'kafka-topics --create --topic stats.user-actions.v1 \
                              --partitions 1 --replication-factor 1 --if-not-exists \
                              --bootstrap-server kafka:29092 && \
                 kafka-topics --create --topic stats.events-similarity.v1 \
                              --partitions 1 --replication-factor 1 --if-not-exists \
-                             --bootstrap-server kafka:29092 && \
+                             --bootstrap-server kafka:29092 '"
     init: true

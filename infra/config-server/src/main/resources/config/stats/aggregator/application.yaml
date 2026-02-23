@@ -11,7 +11,7 @@ spring:
           v1: stats.events-similarity.v1
 
 server:
-  port: 9096
+  port: 0
 
 
 grpc:

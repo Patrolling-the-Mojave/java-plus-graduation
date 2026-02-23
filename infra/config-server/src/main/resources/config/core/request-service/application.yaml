@@ -41,9 +41,11 @@ stat-server:
 
 grpc:
   client:
-    analyzer:
-      address: 'discovery:///collector'
-      negotiationType: plaintext
+    collector:
+      address: discovery:///collector
       enableKeepAlive: true
       keepAliveWithoutCalls: true
-      deadline: 10000
+      negotiationType: plaintext
+      enableRetry: true
+      retryAttempts: 15
+      retryDelay: 3000

@@ -1,4 +1,13 @@
 spring:
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 3000
+        max-attempts: 10
+        max-interval: 10000
+  jackson:
+    time-zone: UTC
   kafka:
     bootstrap-servers: localhost:9092
     topics:
@@ -8,9 +17,10 @@ spring:
         events-similarity:
           v1: stats.events-similarity.v1
 
-server:
-  port: 9095
 
+
+server:
+  port: 0
 
 grpc:
   server:

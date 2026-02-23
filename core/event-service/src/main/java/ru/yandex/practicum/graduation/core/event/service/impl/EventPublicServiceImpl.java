@@ -11,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import ru.practicum.stats.client.AnalyzerClient;
 import ru.practicum.stats.client.CollectorClient;
-import ru.practicum.stats.client.StatClient;
-import ru.practicum.stats.dto.dto.EndpointHitDto;
 import ru.practicum.stats.dto.dto.RecommendationEvent;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.dto.user.UserDto;

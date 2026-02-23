@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+
 @GrpcService
 @RequiredArgsConstructor
 public class RecommendationController extends RecommendationsControllerGrpc.RecommendationsControllerImplBase {

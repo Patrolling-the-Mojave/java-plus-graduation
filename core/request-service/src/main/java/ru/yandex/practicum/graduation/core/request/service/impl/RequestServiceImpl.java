@@ -101,6 +101,7 @@ public class RequestServiceImpl implements RequestService {
                 .setEventId(eventId)
                 .setActionType(ActionTypeProto.ACTION_REGISTER)
                 .build();
+
         collectorClient.sendUserAction(userActionProto);
 
         Request request = Request

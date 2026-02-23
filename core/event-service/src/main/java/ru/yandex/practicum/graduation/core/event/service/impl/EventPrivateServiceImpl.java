@@ -6,8 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.stats.client.AnalyzerClient;
-import ru.practicum.stats.client.CollectorClient;
-import ru.practicum.stats.client.StatClient;
+
 import ru.yandex.practicum.graduation.core.dto.exception.ConflictException;
 import ru.yandex.practicum.graduation.core.dto.exception.NotFoundException;
 import ru.yandex.practicum.graduation.core.dto.exception.ValidationException;
@@ -48,7 +47,6 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
     private final EventRepository eventRepository;
     private final UserClient userClient;
     private final EventMapper eventMapper;
-    private final CollectorClient collectorClient;
     private final LocationMapper locationMapper;
     private final CategoryRepository categoryRepository;
     private final LocationRepository locationRepository;
@@ -57,7 +55,6 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
                                    AnalyzerClient analyzerClient,
                                    EventRepository eventRepository,
                                    UserClient userClient,
-                                   CollectorClient collectorClient,
                                    LocationMapper locationMapper,
                                    EventMapper eventMapper,
                                    CategoryRepository categoryRepository,
@@ -65,7 +62,6 @@ public class EventPrivateServiceImpl extends AbstractEventService implements Eve
         super(requestClient, analyzerClient);
         this.eventRepository = eventRepository;
         this.userClient = userClient;
-        this.collectorClient = collectorClient;
         this.locationMapper = locationMapper;
         this.eventMapper = eventMapper;
         this.categoryRepository = categoryRepository;

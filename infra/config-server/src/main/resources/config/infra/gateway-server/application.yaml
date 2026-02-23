@@ -1,6 +1,9 @@
 spring:
   cloud:
     gateway:
+      httpclient:
+        connect-timeout: 5000
+        response-timeout: 60s
       discovery:
         locator:
           enabled: true

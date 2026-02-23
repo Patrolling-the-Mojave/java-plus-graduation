@@ -38,3 +38,20 @@ logging:
 
 stat-server:
   url: http://localhost:9090
+
+grpc:
+  client:
+    analyzer:
+      address: 'discovery:///analyzer'
+      negotiationType: plaintext
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      deadline: 10000
+
+    collector:
+      address: 'discovery:///collector'
+      negotiationType: plaintext
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      deadline: 10000
+

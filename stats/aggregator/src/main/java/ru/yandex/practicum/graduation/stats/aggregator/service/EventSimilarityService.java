@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.practicum.stats.avro.ActionTypeAvro;
 import ru.practicum.stats.avro.EventSimilarityAvro;
 import ru.practicum.stats.avro.UserActionAvro;
-import ru.yandex.practicum.graduation.stats.aggregator.mapper.EventSimilarityMapper;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -25,53 +24,81 @@ public class EventSimilarityService {
 
     private final Map<Long, Map<Long, Double>> minWeights = new ConcurrentHashMap<>();
 
-    private final Map<ActionTypeAvro, Double> actionTypeWeight = Map.of(ActionTypeAvro.VIEW, 0.4, ActionTypeAvro.REGISTER, 0.8, ActionTypeAvro.LIKE, 1.0);
+    private final Map<ActionTypeAvro, Double> actionTypeWeight = Map.of(
+            ActionTypeAvro.VIEW, 0.4,
+            ActionTypeAvro.REGISTER, 0.8,
+            ActionTypeAvro.LIKE, 1.0
+    );
 
     public List<EventSimilarityAvro> calculateSimilarity(UserActionAvro userAction) {
         Double newWeight = actionTypeWeight.get(userAction.getActionType());
-        Double prevWeight = userWeights
-                .getOrDefault(userAction.getEventId(), new ConcurrentHashMap<>())
-                .get(userAction.getUserId());
-        if (prevWeight == null) {
-            prevWeight = 0.0;
-        }
-        if (newWeight <= prevWeight) {
+        if (newWeight == null) {
+            log.warn("Неизвестный тип действия: {}", userAction.getActionType());
             return Collections.emptyList();
         }
-        userWeights.get(userAction.getEventId()).put(userAction.getUserId(), newWeight);
-        if (eventSums.containsKey(userAction.getEventId())) {
-            Double prevSum = eventSums.get(userAction.getEventId());
-            eventSums.put(userAction.getEventId(), prevSum + newWeight - prevWeight);
+
+        Map<Long, Double> eventWeights = userWeights.computeIfAbsent(
+                userAction.getEventId(),
+                k -> new ConcurrentHashMap<>()
+        );
+
+        Double prevWeight = eventWeights.getOrDefault(userAction.getUserId(), 0.0);
+
+        if (newWeight <= prevWeight) {
+            log.debug("Вес не увеличился (был: {}, стал: {}), пересчёт не требуется",
+                    prevWeight, newWeight);
+            return Collections.emptyList();
         }
-        List<EventSimilarityAvro> similarities = recalculateEventSimilarity(userAction.getEventId(), userAction.getUserId(), prevWeight, newWeight, userAction.getTimestamp());
-        log.debug("произведен расчет косинусного сходства для ивентов {}", similarities);
+
+        eventWeights.put(userAction.getUserId(), newWeight);
+
+        Double prevSum = eventSums.getOrDefault(userAction.getEventId(), 0.0);
+        eventSums.put(userAction.getEventId(), prevSum + newWeight - prevWeight);
+
+        List<EventSimilarityAvro> similarities = recalculateEventSimilarity(
+                userAction.getEventId(),
+                userAction.getUserId(),
+                prevWeight,
+                newWeight,
+                userAction.getTimestamp()
+        );
+
+        log.debug("Рассчитано сходство для события {}: {} пар",
+                userAction.getEventId(), similarities.size());
         return similarities;
     }
 
-    private List<EventSimilarityAvro> recalculateEventSimilarity(Long eventId, Long userId, Double oldWeight, Double newWeight, Instant timestamp) {
+    private List<EventSimilarityAvro> recalculateEventSimilarity(
+            Long eventId, Long userId, Double oldWeight, Double newWeight, Instant timestamp) {
+
         List<EventSimilarityAvro> eventSimilarities = new ArrayList<>();
+
         for (Map.Entry<Long, Map<Long, Double>> entry : userWeights.entrySet()) {
-            if (entry.getKey().equals(eventId)) {
-                continue;
-            }
-            Double eventWeight = entry.getValue().get(userId);
-            if (eventWeight == null) {
+            Long otherEventId = entry.getKey();
+
+            if (otherEventId.equals(eventId)) {
                 continue;
             }
 
-            double oldMin = Math.min(oldWeight, eventWeight);
-            double newMin = Math.min(newWeight, eventWeight);
+            Double otherWeight = entry.getValue().get(userId);
+            if (otherWeight == null) {
+                continue;
+            }
+
+            double oldMin = Math.min(oldWeight, otherWeight);
+            double newMin = Math.min(newWeight, otherWeight);
             double delta = newMin - oldMin;
 
-            if (newMin != oldMin) {
-                updateMinWeight(eventId, entry.getKey(), delta);
+            if (delta != 0) {
+                updateMinWeight(eventId, otherEventId, delta);
             }
-            double similarity = calculateSimilarity(eventId, entry.getKey());
+
+            double similarity = calculateSimilarity(eventId, otherEventId);
             if (similarity > 0) {
-                EventSimilarityAvro similarityAvro = EventSimilarityMapper.toSimilarity(eventId, entry.getKey(), similarity, timestamp);
-                eventSimilarities.add(similarityAvro);
+                eventSimilarities.add(buildSimilarity(eventId, otherEventId, similarity, timestamp));
             }
         }
+
         return eventSimilarities;
     }
 
@@ -79,18 +106,17 @@ public class EventSimilarityService {
         long first = Math.min(eventA, eventB);
         long second = Math.max(eventA, eventB);
 
-        Double sumMin = minWeights
-                .computeIfAbsent(first, k -> new ConcurrentHashMap<>())
-                .get(second);
+        Map<Long, Double> innerMap = minWeights.get(first);
+        Double sumMin = (innerMap != null) ? innerMap.get(second) : null;
 
         if (sumMin == null || sumMin == 0.0) {
             return 0.0;
         }
 
-        Double sumA = eventSums.get(eventA);
-        Double sumB = eventSums.get(eventB);
+        Double sumA = eventSums.getOrDefault(eventA, 0.0);
+        Double sumB = eventSums.getOrDefault(eventB, 0.0);
 
-        if (sumA == null || sumB == null || sumA == 0.0 || sumB == 0.0) {
+        if (sumA == 0.0 || sumB == 0.0) {
             return 0.0;
         }
 
@@ -113,6 +139,7 @@ public class EventSimilarityService {
     private void updateMinWeight(Long eventA, Long eventB, Double delta) {
         long first = Math.min(eventA, eventB);
         long second = Math.max(eventA, eventB);
+
         minWeights
                 .computeIfAbsent(first, k -> new ConcurrentHashMap<>())
                 .merge(second, delta, Double::sum);

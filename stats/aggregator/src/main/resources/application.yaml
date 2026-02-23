@@ -16,3 +16,10 @@ eureka:
     register-with-eureka: true
     enabled: true
     fetch-registry: true
+
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${random.int}
+    metadata-map:
+      grpc.port: ${grpc.server.port}
+      grpc.host: ${eureka.instance.hostname:localhost}

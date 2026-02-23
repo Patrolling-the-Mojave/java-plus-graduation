@@ -18,3 +18,9 @@ grpc:
   server:
     port: 0
     negotiationType: plaintext
+
+
+logging:
+  level:
+    com.netflix.discovery: DEBUG
+    org.springframework.cloud.netflix.eureka: DEBUG

@@ -20,7 +20,7 @@ spring:
 
 
 server:
-  port: 0
+  port: 9097
 
 grpc:
   server:

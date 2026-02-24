@@ -81,7 +81,7 @@ public class EventPublicController {
     @GetMapping("/recommendations")
     public List<EventShortDto> getRecommendations(
             @RequestHeader(value = "X-EWM-USER-ID", required = false) Long userId,
-            @Positive @RequestParam(defaultValue = "10") Integer maxResults) {
+            @Positive @RequestParam(defaultValue = "10") Long maxResults) {
         if (userId == null || userId <= 0) {
             throw new ValidationException("Требуется заголовок X-EWM-USER-ID с корректным ID пользователя");
         }

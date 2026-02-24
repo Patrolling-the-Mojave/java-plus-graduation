@@ -22,11 +22,14 @@ import java.util.stream.StreamSupport;
 @Service
 @Slf4j
 public class AnalyzerClient {
+    private final RecommendationsControllerGrpc.RecommendationsControllerBlockingStub recommendationClient;
 
-    @GrpcClient("analyzer")
-    RecommendationsControllerGrpc.RecommendationsControllerBlockingStub recommendationClient;
+    public AnalyzerClient(@GrpcClient("analyzer")
+                          RecommendationsControllerGrpc.RecommendationsControllerBlockingStub recommendationClient){
+        this.recommendationClient = recommendationClient;
+    }
 
-    public List<RecommendationEvent> getRecommendationsForUser(long userId, int maxResults) {
+    public List<RecommendationEvent> getRecommendationsForUser(long userId, long maxResults) {
         try {
             log.debug("Запрос рекомендаций для пользователя {}: лимит={}", userId, maxResults);
 
@@ -85,7 +88,7 @@ public class AnalyzerClient {
             log.debug("Запрос суммы взаимодействий для {} мероприятий", eventIds.size());
 
             InteractionsCountRequestProto.Builder requestBuilder = InteractionsCountRequestProto.newBuilder();
-            eventIds.forEach(requestBuilder::addEventIds);
+            eventIds.forEach(requestBuilder::addEventId);
             InteractionsCountRequestProto request = requestBuilder.build();
 
             Iterator<RecommendedEventProto> iterator = recommendationClient.getInteractionsCount(request);

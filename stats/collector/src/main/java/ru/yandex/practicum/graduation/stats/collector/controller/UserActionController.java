@@ -20,6 +20,8 @@ public class UserActionController extends UserActionControllerGrpc.UserActionCon
     public void collectUserAction(UserActionProto request, StreamObserver<Empty> responseObserver) {
         try {
             userActionProducerService.produce(request);
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
         } catch (Exception e) {
             log.error("Ошибка обработки collectUserAction", e);
             responseObserver.onError(

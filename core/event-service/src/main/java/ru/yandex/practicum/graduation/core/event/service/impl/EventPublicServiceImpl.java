@@ -44,7 +44,6 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
     private final EventRepository eventRepository;
     private final EventMapper eventMapper;
     private final UserClient userClient;
-    private final CollectorClient collectorClient;
 
     public EventPublicServiceImpl(RequestClient requestClient,
                                   AnalyzerClient analyzerClient,
@@ -53,7 +52,6 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
                                   EventMapper eventMapper, UserClient userClient) {
         super(requestClient, analyzerClient);
         this.eventMapper = eventMapper;
-        this.collectorClient = collectorClient;
         this.eventRepository = eventRepository;
         this.userClient = userClient;
     }
@@ -124,7 +122,7 @@ public class EventPublicServiceImpl extends AbstractEventService implements Even
     }
 
     @Override
-    public List<EventShortDto> getRecommendations(Long userId, int maxResults) {
+    public List<EventShortDto> getRecommendations(Long userId, long maxResults) {
         List<RecommendationEvent> recommendations = analyzerClient.getRecommendationsForUser(userId, maxResults);
         if (recommendations.isEmpty()) {
             return Collections.emptyList();

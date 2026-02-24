@@ -78,8 +78,8 @@ public class RecommendationController extends RecommendationsControllerGrpc.Reco
     public void getInteractionsCount(InteractionsCountRequestProto request, StreamObserver<RecommendedEventProto> responseObserver) {
         try {
             List<Long> eventIds = new ArrayList<>();
-            for (int i = 0; i < request.getEventIdsCount(); i++) {
-                eventIds.add(request.getEventIds(i));
+            for (int i = 0; i < request.getEventIdCount(); i++) {
+                eventIds.add(request.getEventId(i));
             }
 
             List<RecommendationEvent> counts = recommendationService.getInteractionsCount(eventIds);

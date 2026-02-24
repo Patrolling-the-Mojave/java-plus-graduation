@@ -11,22 +11,25 @@ import java.time.Instant;
 @Component
 public class UserActionMapper {
 
-    public static UserActionAvro toAvro(UserActionProto userActionProto) {
+    public static UserActionAvro toAvro(UserActionProto proto) {
+        Instant ts = proto.hasTimestamp()
+                ? Instant.ofEpochSecond(proto.getTimestamp().getSeconds(), proto.getTimestamp().getNanos())
+                : Instant.now();
+
         return UserActionAvro.newBuilder()
-                .setUserId(userActionProto.getUserId())
-                .setEventId(userActionProto.getEventId())
-                .setTimestamp(Instant.ofEpochSecond(userActionProto.getTimestamp().getSeconds(),
-                        userActionProto.getTimestamp().getNanos()))
-                .setActionType(toAvroActionType(userActionProto.getActionType()))
+                .setUserId(proto.getUserId())
+                .setEventId(proto.getEventId())
+                .setActionType(toAvroActionType(proto.getActionType()))
+                .setTimestamp(ts)
                 .build();
     }
 
-    private static ActionTypeAvro toAvroActionType(ActionTypeProto actionTypeProto) {
-        return switch (actionTypeProto) {
+    private static ActionTypeAvro toAvroActionType(ActionTypeProto proto) {
+        return switch (proto) {
             case ACTION_LIKE -> ActionTypeAvro.LIKE;
             case ACTION_REGISTER -> ActionTypeAvro.REGISTER;
             case ACTION_VIEW -> ActionTypeAvro.VIEW;
-            case UNRECOGNIZED -> null;
+            default -> throw new IllegalArgumentException("Неизвестный тип действия: " + proto);
         };
     }
 

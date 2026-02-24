@@ -25,7 +25,7 @@ spring:
     password: root
 
 server:
-  port: 9098
+  port: 9095
 
 logging:
   level:

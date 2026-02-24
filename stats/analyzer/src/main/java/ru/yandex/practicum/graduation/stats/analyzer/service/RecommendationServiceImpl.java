@@ -22,7 +22,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecommendationEvent> getSimilarEvents(Long eventId, Long userId, int maxResults) {
+    public List<RecommendationEvent> getSimilarEvents(Long eventId, Long userId, long maxResults) {
         log.debug("Поиск похожих мероприятий для {} (пользователь: {})", eventId, userId);
 
         List<EventSimilarity> similarities = new ArrayList<>();
@@ -51,7 +51,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecommendationEvent> getRecommendationForUser(Long userId, int maxResults) {
+    public List<RecommendationEvent> getRecommendationForUser(Long userId, long maxResults) {
         List<UserInteraction> recentInteractions = interactionRepository
                 .findTopByUserId(userId, org.springframework.data.domain.PageRequest.of(0, 10));
 

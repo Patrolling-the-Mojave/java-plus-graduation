@@ -15,5 +15,5 @@ public interface EventPublicService {
 
     EventFullDto getEvent(Long id, Long userId, HttpServletRequest request);
 
-    List<EventShortDto> getRecommendations(Long userId, int maxResults);
+    List<EventShortDto> getRecommendations(Long userId, long maxResults);
 }

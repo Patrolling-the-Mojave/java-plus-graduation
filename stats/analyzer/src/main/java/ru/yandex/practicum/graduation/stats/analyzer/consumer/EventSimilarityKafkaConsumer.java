@@ -20,7 +20,7 @@ public class EventSimilarityKafkaConsumer {
     @KafkaListener(topics = "${spring.kafka.topics.stats.events-similarity.v1}",
             groupId = "analyzer-event-similarity-group",
             containerFactory = "eventSimilarityListenerContainerFactory")
-    public void pollEventSimilarity(ConsumerRecord<String, EventSimilarityAvro> record) {
+    public void pollEventSimilarity(ConsumerRecord<Long, EventSimilarityAvro> record) {
         try {
             EventSimilarity entity = EventSimilarityMapper.toEntity(record.value());
             eventSimilarityRepository.save(entity);

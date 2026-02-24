@@ -20,7 +20,6 @@ public class UserActionProducerService {
 
     public void produce(UserActionProto userActionProto) {
         UserActionAvro userActionAvro = UserActionMapper.toAvro(userActionProto);
-        String key = String.valueOf(userActionProto.getUserId());
-        kafkaMessageProducer.send(userActionAvro, topic, key);
+        kafkaMessageProducer.send(userActionAvro, topic, userActionAvro.getEventId());
     }
 }

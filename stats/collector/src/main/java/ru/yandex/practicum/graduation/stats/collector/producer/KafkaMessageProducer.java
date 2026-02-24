@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class KafkaMessageProducer {
-    private final KafkaProducer<String, SpecificRecordBase> kafkaProducer;
+    private final KafkaProducer<Long, SpecificRecordBase> kafkaProducer;
 
-    public <T extends SpecificRecordBase> void send(T event, String topic, String key) {
-        ProducerRecord<String, SpecificRecordBase> record = new ProducerRecord<>(topic, key, event);
+    public <T extends SpecificRecordBase> void send(T event, String topic, Long key) {
+        ProducerRecord<Long, SpecificRecordBase> record = new ProducerRecord<>(topic, key, event);
         kafkaProducer.send(record);
     }
 }

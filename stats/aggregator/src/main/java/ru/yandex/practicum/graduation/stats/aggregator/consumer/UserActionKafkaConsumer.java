@@ -19,19 +19,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserActionKafkaConsumer {
     private final EventSimilarityService similarityService;
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final KafkaTemplate<Long, Object> kafkaTemplate;
 
     @Value("${spring.kafka.topics.stats.events-similarity.v1}")
     private String similarityTopic;
 
     @KafkaListener(topics = "${spring.kafka.topics.stats.user-action.v1}")
-    public void processAction(ConsumerRecord<String, UserActionAvro> record) {
+    public void processAction(ConsumerRecord<Long, UserActionAvro> record) {
         UserActionAvro userAction = record.value();
         List<EventSimilarityAvro> similarities = similarityService.calculateSimilarity(userAction);
         for (EventSimilarityAvro similarity : similarities) {
             try {
-                String key = similarity.getEventA() + "" + similarity.getEventB();
-                kafkaTemplate.send(similarityTopic, null, similarity.getTimestamp().toEpochMilli(), key, similarity)
+                kafkaTemplate.send(similarityTopic, null, similarity.getTimestamp().toEpochMilli(), userAction.getEventId(), similarity)
                         .whenComplete((result, ex) -> {
                             if (ex != null) {
                                 log.error("не удалось отправить сходство {} в топик",

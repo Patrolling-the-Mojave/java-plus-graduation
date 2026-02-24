@@ -20,7 +20,7 @@ public class UserActionKafkaConsumer {
     @KafkaListener(topics = "${spring.kafka.topics.stats.user-action.v1}",
             groupId = "analyzer-user-action-group",
             containerFactory = "userActionListenerContainerFactory")
-    public void pollUserInteraction(ConsumerRecord<String, UserActionAvro> record) {
+    public void pollUserInteraction(ConsumerRecord<Long, UserActionAvro> record) {
         try {
             UserInteraction userInteraction = UserActionMapper.toEntity(record.value());
             userInteractionRepository.save(userInteraction);

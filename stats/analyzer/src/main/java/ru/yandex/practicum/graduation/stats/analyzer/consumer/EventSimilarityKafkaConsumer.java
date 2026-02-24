@@ -11,6 +11,8 @@ import ru.yandex.practicum.graduation.stats.analyzer.mapper.EventSimilarityMappe
 import ru.yandex.practicum.graduation.stats.analyzer.model.EventSimilarity;
 import ru.yandex.practicum.graduation.stats.analyzer.repository.EventSimilarityRepository;
 
+import java.util.Optional;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,10 +24,29 @@ public class EventSimilarityKafkaConsumer {
             containerFactory = "eventSimilarityListenerContainerFactory")
     public void pollEventSimilarity(ConsumerRecord<Long, EventSimilarityAvro> record) {
         try {
-            EventSimilarity entity = EventSimilarityMapper.toEntity(record.value());
-            eventSimilarityRepository.save(entity);
+            EventSimilarityAvro avro = record.value();
+            long eventA = Math.min(avro.getEventA(), avro.getEventB());
+            long eventB = Math.max(avro.getEventA(), avro.getEventB());
+
+            Optional<EventSimilarity> existing = eventSimilarityRepository
+                    .findByEventAAndEventB(eventA, eventB);
+
+            if (existing.isPresent()) {
+                EventSimilarity similarity = existing.get();
+                similarity.setSimilarityScore(avro.getScore());
+                similarity.setUpdatedAt(avro.getTimestamp().toEpochMilli());
+                eventSimilarityRepository.save(similarity);
+            } else {
+                EventSimilarity similarity = EventSimilarity.builder()
+                        .eventA(eventA)
+                        .eventB(eventB)
+                        .similarityScore(avro.getScore())
+                        .updatedAt(avro.getTimestamp().toEpochMilli())
+                        .build();
+                eventSimilarityRepository.save(similarity);
+            }
         } catch (Exception e) {
-            throw new AnalyzerServiceException("не удалось обработать сходство ивентов", e);
+            log.error("Не удалось обработать сходство ивентов", e);
         }
     }
 }

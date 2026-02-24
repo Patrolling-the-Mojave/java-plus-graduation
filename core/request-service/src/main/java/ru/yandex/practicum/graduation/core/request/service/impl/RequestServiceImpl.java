@@ -102,6 +102,8 @@ public class RequestServiceImpl implements RequestService {
                 .setActionType(ActionTypeProto.ACTION_REGISTER)
                 .build();
 
+
+        log.debug("обращение к сервису collector");
         collectorClient.sendUserAction(userActionProto);
 
         Request request = Request

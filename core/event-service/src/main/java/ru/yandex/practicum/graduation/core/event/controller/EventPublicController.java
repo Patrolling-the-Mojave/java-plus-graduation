@@ -61,7 +61,7 @@ public class EventPublicController {
     @GetMapping("/{id}")
     public EventFullDto getEvent(
             @PathVariable @Positive Long id,
-            @RequestHeader(value = "X-EWM-USER-ID", required = false) Long userId,
+            @RequestHeader(value = "X-EWM-USER-ID") Long userId,
             HttpServletRequest request) {
 
         if (userId != null && userId > 0) {
@@ -101,6 +101,7 @@ public class EventPublicController {
                 .setEventId(eventId)
                 .setActionType(ActionTypeProto.ACTION_LIKE)
                 .build();
+        log.debug("обращение к сервису collector");
         collectorClient.sendUserAction(userActionProto);
     }
 }

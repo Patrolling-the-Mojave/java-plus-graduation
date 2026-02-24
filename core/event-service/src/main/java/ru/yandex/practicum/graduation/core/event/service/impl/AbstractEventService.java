@@ -50,6 +50,7 @@ public abstract class AbstractEventService {
 
     protected Double getEventRating(Long eventId) {
         try {
+            log.debug("обращение к сервису analyzer");
             List<RecommendationEvent> ratings = analyzerClient.getInteractionsCount(List.of(eventId));
             return ratings.stream()
                     .findFirst()

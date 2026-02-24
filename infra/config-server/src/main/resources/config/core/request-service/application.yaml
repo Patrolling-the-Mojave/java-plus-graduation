@@ -29,7 +29,7 @@ server:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     ru.practicum.main: TRACE
     org.springframework.orm.jpa: DEBUG
     org.springframework.transaction: DEBUG

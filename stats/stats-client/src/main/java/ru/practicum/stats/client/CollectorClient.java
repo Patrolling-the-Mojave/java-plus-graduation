@@ -1,6 +1,5 @@
 package ru.practicum.stats.client;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
@@ -17,8 +16,7 @@ public class CollectorClient {
     public void sendUserAction(UserActionProto userActionProto) {
         try {
             collectorGrpc.collectUserAction(userActionProto);
-            log.info("Действие отправлено в Collector: пользователь={}, мероприятие={}",
-                    userActionProto.getUserId(), userActionProto.getEventId());
+            log.info("Действие отправлено в Collector: пользователь={}, мероприятие={}", userActionProto.getUserId(), userActionProto.getEventId());
         } catch (Exception e) {
             throw new StatsClientException("ошибка при работе с сервисом статистики", e);
         }

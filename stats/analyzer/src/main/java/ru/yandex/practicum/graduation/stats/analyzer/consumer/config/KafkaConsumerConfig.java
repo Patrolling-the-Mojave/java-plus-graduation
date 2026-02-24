@@ -2,7 +2,6 @@ package ru.yandex.practicum.graduation.stats.analyzer.consumer.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.LongDeserializer;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,29 +23,29 @@ public class KafkaConsumerConfig {
     private String bootstrapServers;
 
     @Bean
-    public ConsumerFactory<String, UserActionAvro> userActionConsumerFactory() {
+    public ConsumerFactory<Long, UserActionAvro> userActionConsumerFactory() {
         Map<String, Object> props = baseConsumerProps();
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, UserActionDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, UserActionAvro> userActionListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, UserActionAvro>();
+    public ConcurrentKafkaListenerContainerFactory<Long, UserActionAvro> userActionListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<Long, UserActionAvro>();
         factory.setConsumerFactory(userActionConsumerFactory());
         return factory;
     }
 
     @Bean
-    public ConsumerFactory<String, EventSimilarityAvro> eventSimilarityConsumerFactory() {
+    public ConsumerFactory<Long, EventSimilarityAvro> eventSimilarityConsumerFactory() {
         Map<String, Object> props = baseConsumerProps();
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, EventSimilarityDeserializer.class);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
     @Bean
-    public ConcurrentKafkaListenerContainerFactory<String, EventSimilarityAvro> eventSimilarityListenerContainerFactory() {
-        var factory = new ConcurrentKafkaListenerContainerFactory<String, EventSimilarityAvro>();
+    public ConcurrentKafkaListenerContainerFactory<Long, EventSimilarityAvro> eventSimilarityListenerContainerFactory() {
+        var factory = new ConcurrentKafkaListenerContainerFactory<Long, EventSimilarityAvro>();
         factory.setConsumerFactory(eventSimilarityConsumerFactory());
         return factory;
     }

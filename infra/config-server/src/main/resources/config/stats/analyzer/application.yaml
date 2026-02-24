@@ -8,7 +8,7 @@ spring:
     topics:
       stats:
         user-action:
-          v1: stats.user-action.v1
+          v1: stats.user-actions.v1
         events-similarity:
           v1: stats.events-similarity.v1
   jpa:

@@ -45,15 +45,12 @@ public class EventSimilarityService {
         Double prevWeight = eventWeights.getOrDefault(userAction.getUserId(), 0.0);
 
         if (newWeight <= prevWeight) {
-            log.debug("Вес не увеличился (был: {}, стал: {}), пересчёт не требуется",
-                    prevWeight, newWeight);
             return Collections.emptyList();
         }
 
         eventWeights.put(userAction.getUserId(), newWeight);
 
-        Double prevSum = eventSums.getOrDefault(userAction.getEventId(), 0.0);
-        eventSums.put(userAction.getEventId(), prevSum + newWeight - prevWeight);
+        eventSums.merge(userAction.getEventId(), newWeight - prevWeight, Double::sum);
 
         List<EventSimilarityAvro> similarities = recalculateEventSimilarity(
                 userAction.getEventId(),
@@ -121,7 +118,7 @@ public class EventSimilarityService {
         }
 
         double similarity = sumMin / (Math.sqrt(sumA) * Math.sqrt(sumB));
-        return Math.round(similarity * 1000.0) / 1000.0;
+        return Math.round(similarity * 100.0) / 100.0;
     }
 
     private EventSimilarityAvro buildSimilarity(long eventA, long eventB, double score, Instant timestamp) {

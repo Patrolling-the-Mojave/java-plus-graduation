@@ -1,18 +1,15 @@
-spring:
-  application:
-    name: stats-server
-  config:
-    import: "configserver:"
-  cloud:
-    config:
-      discovery:
-        enabled: true
-        serviceId: config-server
-
-eureka:
+grpc:
   client:
-    serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
-    register-with-eureka: true
-    enabled: true
-    fetch-registry: true
+    collector:
+      address: 'discovery:///collector'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+      deadline: 5000
+
+    analyzer:
+      address: 'discovery:///analyzer'
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+      deadline: 10000

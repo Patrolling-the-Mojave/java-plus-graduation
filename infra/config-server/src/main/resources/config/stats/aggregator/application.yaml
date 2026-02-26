@@ -1,0 +1,19 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: aggregator-group
+    topics:
+      stats:
+        user-action:
+          v1: stats.user-actions.v1
+        events-similarity:
+          v1: stats.events-similarity.v1
+
+server:
+  port: 9099
+
+logging:
+  level:
+    com.netflix.discovery: DEBUG
+    org.springframework.cloud.netflix.eureka: DEBUG

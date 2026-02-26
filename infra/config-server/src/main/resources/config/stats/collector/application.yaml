@@ -1,0 +1,28 @@
+spring:
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 3000
+        max-attempts: 10
+        max-interval: 10000
+  jackson:
+    time-zone: UTC
+  kafka:
+    bootstrap-servers: localhost:9092
+    topics:
+      stats:
+        user-action:
+          v1: stats.user-actions.v1
+        events-similarity:
+          v1: stats.events-similarity.v1
+
+
+
+server:
+  port: 9097
+
+grpc:
+  server:
+    port: 0
+    negotiationType: plaintext

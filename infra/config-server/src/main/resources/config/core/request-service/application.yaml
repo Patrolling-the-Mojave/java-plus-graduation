@@ -29,7 +29,7 @@ server:
 
 logging:
   level:
-    root: INFO
+    root: DEBUG
     ru.practicum.main: TRACE
     org.springframework.orm.jpa: DEBUG
     org.springframework.transaction: DEBUG
@@ -38,3 +38,14 @@ logging:
 
 stat-server:
   url: http://localhost:9090
+
+grpc:
+  client:
+    collector:
+      address: discovery:///collector
+      enableKeepAlive: true
+      keepAliveWithoutCalls: true
+      negotiationType: plaintext
+      enableRetry: true
+      retryAttempts: 15
+      retryDelay: 3000
